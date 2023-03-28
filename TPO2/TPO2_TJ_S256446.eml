@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component inherit-compiler-output="true" inheritJdk="true">
+	<output-test url="file://$MODULE_DIR$/out/test/TPO2_TJ_S256446"/>
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$"/>
+	<lib name="jackson-annotations-2.14.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/lib/jackson-annotations-2.14.2.jar!/"/>
+	</lib>
+	<lib name="jackson-core-2.14.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/lib/jackson-core-2.14.2.jar!/"/>
+	</lib>
+	<lib name="jackson-databind-2.14.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/lib/jackson-databind-2.14.2.jar!/"/>
+	</lib>
+</component>
