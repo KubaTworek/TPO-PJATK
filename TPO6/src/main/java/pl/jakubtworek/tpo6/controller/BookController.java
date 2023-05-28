@@ -1,7 +1,6 @@
 package pl.jakubtworek.tpo6.controller;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 
 import pl.jakubtworek.tpo6.model.Book;
@@ -39,7 +38,16 @@ public class BookController extends HttpServlet {
         String authorFilter = request.getParameter("author");
         String titleFilter = request.getParameter("title");
 
-        List<Book> filteredBooks = bookService.filterBooks(authorFilter, titleFilter);
+        List<Book> filteredBooks;
+        if (authorFilter == null && titleFilter == null) {
+            filteredBooks = bookService.getAllBooks();
+        } else if (authorFilter != null && titleFilter == null) {
+            filteredBooks = bookService.filterBooksByAuthor(authorFilter);
+        } else if (authorFilter == null && titleFilter != null) {
+            filteredBooks = bookService.filterBooksByTitle(titleFilter);
+        } else {
+            filteredBooks = bookService.filterBooks(authorFilter, titleFilter);
+        }
 
         out.println("<ul>");
         for (Book book : filteredBooks) {
