@@ -1,13 +1,15 @@
 package pl.jakubtworek.tpo6.controller;
 
-import java.io.*;
-import java.util.List;
-
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import pl.jakubtworek.tpo6.model.Book;
-
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.*;
 import pl.jakubtworek.tpo6.service.BookService;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
 
 @WebServlet(name = "Books", urlPatterns = "/books")
 public class BookController extends HttpServlet {
@@ -20,7 +22,6 @@ public class BookController extends HttpServlet {
 
     @Override
     public void init() {
-        // Initialization code if needed
     }
 
     @Override
@@ -59,18 +60,6 @@ public class BookController extends HttpServlet {
         Book newBook = new Book(title, author);
 
         bookService.addBook(newBook);
-
-        response.sendRedirect(request.getContextPath() + "/books");
-    }
-
-    @Override
-    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String bookId = request.getParameter("id");
-
-        if (bookId != null) {
-            int id = Integer.parseInt(bookId);
-            bookService.removeBook(id);
-        }
 
         response.sendRedirect(request.getContextPath() + "/books");
     }
@@ -125,6 +114,5 @@ public class BookController extends HttpServlet {
 
     @Override
     public void destroy() {
-        // Cleanup code if needed
     }
 }

@@ -31,8 +31,4 @@ public class BookService {
     public void addBook(Book newBook) {
         bookRepository.addBook(newBook);
     }
-
-    public void removeBook(int id) {
-        bookRepository.removeBook(id);
-    }
 }

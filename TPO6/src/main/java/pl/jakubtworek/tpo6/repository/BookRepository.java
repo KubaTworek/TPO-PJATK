@@ -2,23 +2,23 @@ package pl.jakubtworek.tpo6.repository;
 
 import pl.jakubtworek.tpo6.model.Book;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.*;
 
 
 public class BookRepository {
-    private final String url = "jdbc:derby:database;create=true";
     private final String tableName = "Books";
     private final Connection connection;
 
     public BookRepository() {
         try {
             Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+            String url = "jdbc:derby:database;create=true";
             connection = DriverManager.getConnection(url);
+            dropTable();
             if (!isTableExists()) {
                 createTable();
-                insertSampleData();
             }
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
@@ -33,9 +33,20 @@ public class BookRepository {
         return tableExists;
     }
 
+    public void dropTable() {
+        String dropTableQuery = "DROP TABLE " + tableName;
+
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate(dropTableQuery);
+            System.out.println("Table dropped successfully.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void createTable() throws SQLException {
         String createTableQuery = "CREATE TABLE " + tableName + " ("
-                + "id INT PRIMARY KEY,"
+                + "id INT GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1) PRIMARY KEY,"
                 + "title VARCHAR(100),"
                 + "author VARCHAR(100)"
                 + ")";
@@ -46,21 +57,8 @@ public class BookRepository {
         }
     }
 
-    private void insertSampleData() throws SQLException {
-        String insertQuery1 = "INSERT INTO " + tableName + " (id, title, author) VALUES (1, 'Book 1', 'Author 1')";
-        String insertQuery2 = "INSERT INTO " + tableName + " (id, title, author) VALUES (2, 'Book 2', 'Author 2')";
-        String insertQuery3 = "INSERT INTO " + tableName + " (id, title, author) VALUES (3, 'Book 3', 'Author 3')";
-
-        try (Statement statement = connection.createStatement()) {
-            statement.executeUpdate(insertQuery1);
-            statement.executeUpdate(insertQuery2);
-            statement.executeUpdate(insertQuery3);
-            System.out.println("Sample data inserted successfully.");
-        }
-    }
-
     public List<Book> getAllBooks() {
-        return executeQuery("SELECT * FROM Books");
+        return executeQuery();
     }
 
     public List<Book> findBooksByAuthor(String authorFilter) {
@@ -78,10 +76,10 @@ public class BookRepository {
         return executeQueryWithTwoParameters(query, "%" + authorFilter + "%", "%" + titleFilter + "%");
     }
 
-    private List<Book> executeQuery(String query) {
+    private List<Book> executeQuery() {
         List<Book> filteredBooks = new ArrayList<>();
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
+        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM Books")) {
             addBooksToList(filteredBooks, statement);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -133,6 +131,27 @@ public class BookRepository {
         statement.close();
     }
 
+    public void addBook(Book newBook) {
+        String insertQuery = "INSERT INTO " + tableName + " (title, author) VALUES (?, ?)";
+
+        try (PreparedStatement statement = connection.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
+            statement.setString(1, newBook.getTitle());
+            statement.setString(2, newBook.getAuthor());
+
+            statement.executeUpdate();
+
+            ResultSet generatedKeys = statement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int generatedId = generatedKeys.getInt(1);
+                newBook.setId(generatedId);
+                System.out.println("Book added successfully with ID: " + generatedId);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void closeConnection() {
         try {
             if (connection != null && !connection.isClosed()) {
@@ -141,11 +160,5 @@ public class BookRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    public void addBook(Book newBook) {
-    }
-
-    public void removeBook(int id) {
     }
 }
