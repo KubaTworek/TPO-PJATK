@@ -8,16 +8,19 @@ import pl.jakubtworek.tpo6.model.Book;
 
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
+import pl.jakubtworek.tpo6.service.BookService;
 
 @WebServlet(name = "Books", urlPatterns = "/books")
 public class BookController extends HttpServlet {
 
-    private final List<Book> books = new ArrayList<>();
+    private final BookService bookService;
+
+    public BookController() {
+        this.bookService = new BookService();
+    }
+
     public void init() {
-        books.add(new Book(1, "Ksiazka 1", "Autor 1"));
-        books.add(new Book(2, "Ksiazka 2", "Autor 2"));
-        books.add(new Book(3, "Ksiazka 3", "Autor 3"));
-        books.add(new Book(4, "Ksiazka 4", "Autor 4"));
+
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -36,18 +39,15 @@ public class BookController extends HttpServlet {
         String authorFilter = request.getParameter("author");
         String titleFilter = request.getParameter("title");
 
-        out.println("<ul>");
-        for (Book book : books) {
-            boolean authorMatched = authorFilter == null || authorFilter.isEmpty() || book.getAuthor().contains(authorFilter);
-            boolean titleMatched = titleFilter == null || titleFilter.isEmpty() || book.getTitle().contains(titleFilter);
+        List<Book> filteredBooks = bookService.filterBooks(authorFilter, titleFilter);
 
-            if (authorMatched && titleMatched) {
-                out.println("<li>");
-                out.println("ID: " + book.getIdBook() + "<br>");
-                out.println("Title: " + book.getTitle() + "<br>");
-                out.println("Author: " + book.getAuthor());
-                out.println("</li>");
-            }
+        out.println("<ul>");
+        for (Book book : filteredBooks) {
+            out.println("<li>");
+            out.println("ID: " + book.getIdBook() + "<br>");
+            out.println("Title: " + book.getTitle() + "<br>");
+            out.println("Author: " + book.getAuthor());
+            out.println("</li>");
         }
         out.println("</ul>");
 
