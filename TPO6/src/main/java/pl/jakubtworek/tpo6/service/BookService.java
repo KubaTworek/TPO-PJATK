@@ -27,4 +27,12 @@ public class BookService {
     public List<Book> findBooksByAuthorAndTitle(String authorFilter, String titleFilter) {
         return bookRepository.findBooksByAuthorAndTitle(authorFilter, titleFilter);
     }
+
+    public void addBook(Book newBook) {
+        bookRepository.addBook(newBook);
+    }
+
+    public void removeBook(int id) {
+        bookRepository.removeBook(id);
+    }
 }

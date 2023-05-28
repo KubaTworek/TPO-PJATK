@@ -27,9 +27,17 @@ public class BookController extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-        out.println("<html><body>");
-        out.println("<h1>Books</h1>");
+        out.println("<html><head>");
+        out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"styles.css\">");
+        out.println("<meta charset=\"UTF-8\">");
+        out.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
+        out.println("<title>Books</title>");
+        out.println("</head><body>");
 
+        out.println("<div class=\"container\">");
+        out.println("<h1>Book Library</h1>");
+
+        printAddBookForm(out);
         printFilterForm(out);
 
         String authorFilter = request.getParameter("author");
@@ -38,14 +46,53 @@ public class BookController extends HttpServlet {
         List<Book> filteredBooks = getFilteredBooks(authorFilter, titleFilter);
         printBooks(out, filteredBooks);
 
+        out.println("</div>");
+
         out.println("</body></html>");
     }
 
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String title = request.getParameter("title");
+        String author = request.getParameter("author");
+
+        Book newBook = new Book(title, author);
+
+        bookService.addBook(newBook);
+
+        response.sendRedirect(request.getContextPath() + "/books");
+    }
+
+    @Override
+    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String bookId = request.getParameter("id");
+
+        if (bookId != null) {
+            int id = Integer.parseInt(bookId);
+            bookService.removeBook(id);
+        }
+
+        response.sendRedirect(request.getContextPath() + "/books");
+    }
+
     private void printFilterForm(PrintWriter out) {
-        out.println("<form method='get' action='/books'>");
-        out.println("Filter by author: <input type='text' name='author'><br>");
-        out.println("Filter by title: <input type='text' name='title'><br>");
+        out.println("<form class='filter-form' method='get' action='/books'>");
+        out.println("<label for='author'>Filter by author:</label>");
+        out.println("<input type='text' id='author' name='author'><br>");
+        out.println("<label for='title'>Filter by title:</label>");
+        out.println("<input type='text' id='title' name='title'><br>");
         out.println("<input type='submit' value='Filter'>");
+        out.println("</form>");
+    }
+
+    private void printAddBookForm(PrintWriter out) {
+        out.println("<h2>Add New Book</h2>");
+        out.println("<form class=\"add-book-form\" method='post' action='/books'>");
+        out.println("<label for='title'>Title:</label>");
+        out.println("<input type='text' id='title' name='title'><br>");
+        out.println("<label for='author'>Author:</label>");
+        out.println("<input type='text' id='author' name='author'><br>");
+        out.println("<input type='submit' value='Add Book'>");
         out.println("</form>");
     }
 
@@ -65,9 +112,12 @@ public class BookController extends HttpServlet {
         out.println("<ul>");
         for (Book book : books) {
             out.println("<li>");
-            out.println("ID: " + book.getId() + "<br>");
             out.println("Title: " + book.getTitle() + "<br>");
             out.println("Author: " + book.getAuthor());
+            out.println("<form method='delete' action='/books' style='display: inline;'>");
+            out.println("<input type='hidden' name='id' value='" + book.getId() + "'>");
+            out.println("<input class=\"delete-button\" type='submit' value='X'>");
+            out.println("</form>");
             out.println("</li>");
         }
         out.println("</ul>");

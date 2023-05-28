@@ -142,4 +142,10 @@ public class BookRepository {
             e.printStackTrace();
         }
     }
+
+    public void addBook(Book newBook) {
+    }
+
+    public void removeBook(int id) {
+    }
 }
