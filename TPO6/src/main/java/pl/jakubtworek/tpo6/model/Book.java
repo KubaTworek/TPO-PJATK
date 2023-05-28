@@ -1,22 +1,22 @@
 package pl.jakubtworek.tpo6.model;
 
 public class Book {
-    private int idBook;
+    private int id;
     private String title;
     private String author;
 
     public Book(int idBook, String title, String author) {
-        this.idBook = idBook;
+        this.id = idBook;
         this.title = title;
         this.author = author;
     }
 
-    public int getIdBook() {
-        return idBook;
+    public int getId() {
+        return id;
     }
 
-    public void setIdBook(int idBook) {
-        this.idBook = idBook;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitle() {

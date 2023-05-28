@@ -3,7 +3,6 @@ package pl.jakubtworek.tpo6.service;
 import pl.jakubtworek.tpo6.model.Book;
 import pl.jakubtworek.tpo6.repository.BookRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BookService {
@@ -17,15 +16,15 @@ public class BookService {
         return bookRepository.getAllBooks();
     }
 
-    public List<Book> filterBooksByAuthor(String authorFilter) {
+    public List<Book> findBooksByAuthor(String authorFilter) {
         return bookRepository.findBooksByAuthor(authorFilter);
     }
 
-    public List<Book> filterBooksByTitle(String titleFilter) {
+    public List<Book> findBooksByTitle(String titleFilter) {
         return bookRepository.findBooksByTitle(titleFilter);
     }
 
-    public List<Book> filterBooks(String authorFilter, String titleFilter) {
+    public List<Book> findBooksByAuthorAndTitle(String authorFilter, String titleFilter) {
         return bookRepository.findBooksByAuthorAndTitle(authorFilter, titleFilter);
     }
 }
